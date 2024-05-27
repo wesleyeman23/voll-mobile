@@ -13,17 +13,35 @@ export default function Cadastro({ navigation }: any) {
     const [planos, setPlanos] = useState([] as number[]);
     const toast = useToast();
 
+    function todosCamposPreenchidos() {
+        const campos = secoes[numSecao]?.entradaTexto || [];
+        for (let campo of campos) {
+            if (!dados[campo.name]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     function avancarSecao() {
-        if (numSecao < secoes.length - 1) {
-            setNumeroSecao(numSecao + 1);
+        if (todosCamposPreenchidos()) {
+            if (numSecao < secoes.length - 1) {
+                setNumeroSecao(numSecao + 1);
+            } else {
+                console.log(dados);
+                console.log(planos);
+                toast.show({
+                    title: "Cliente Cadastrado!",
+                    description: "Cadastro realizado com sucesso!",
+                    backgroundColor: "green.500"
+                })
+            }
         } else {
-            console.log(dados);
-            console.log(planos);
             toast.show({
-                title: "Cliente Cadastrado!",
-                description: "Cadastro realizado com sucesso!",
-                backgroundColor: "green.500"
-            })
+                title: "Erro",
+                description: "Preencha todos os campos antes de continuar.",
+                backgroundColor: "red.500"
+            });
         }
     }
 
@@ -85,8 +103,8 @@ export default function Cadastro({ navigation }: any) {
                 </Botao>
             }
             <Botao onPress={() => avancarSecao()} mt={4}>
-                AvanÃ§ar
+                Avançar
             </Botao>
-        </ScrollView >
+        </ScrollView>
     );
 }

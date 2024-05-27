@@ -6,6 +6,7 @@ import { Titulo } from './componentes/Titulo';
 import { secoes } from './utils/CadastroEntradaTexto';
 import { useState } from 'react';
 import { useToast } from 'native-base';
+import { cadastrarPaciente } from './servicos/PacienteServico';
 
 export default function Cadastro({ navigation }: any) {
     const [numSecao, setNumeroSecao] = useState(0);
@@ -13,35 +14,18 @@ export default function Cadastro({ navigation }: any) {
     const [planos, setPlanos] = useState([] as number[]);
     const toast = useToast();
 
-    function todosCamposPreenchidos() {
-        const campos = secoes[numSecao]?.entradaTexto || [];
-        for (let campo of campos) {
-            if (!dados[campo.name]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     function avancarSecao() {
-        if (todosCamposPreenchidos()) {
-            if (numSecao < secoes.length - 1) {
-                setNumeroSecao(numSecao + 1);
-            } else {
-                console.log(dados);
-                console.log(planos);
-                toast.show({
-                    title: "Cliente Cadastrado!",
-                    description: "Cadastro realizado com sucesso!",
-                    backgroundColor: "green.500"
-                })
-            }
+        if (numSecao < secoes.length - 1) {
+            setNumeroSecao(numSecao + 1);
         } else {
+            console.log(dados);
+            console.log(planos);
+            cadastrar();
             toast.show({
-                title: "Erro",
-                description: "Preencha todos os campos antes de continuar.",
-                backgroundColor: "red.500"
-            });
+                title: "Cliente Cadastrado!",
+                description: "Cadastro realizado com sucesso!",
+                backgroundColor: "green.500"
+            })
         }
     }
 
@@ -53,6 +37,42 @@ export default function Cadastro({ navigation }: any) {
 
     function atualizarDados(id: string, valor: string) {
         setDados({ ...dados, [id]: valor })
+    }
+
+    async function cadastrar () {
+        const resultado = await cadastrarPaciente({
+            cpf: dados.cpf,
+            nome: dados.nome,
+            email: dados.email,
+            endereco: {
+                cep: dados.cep,
+                rua: dados.rua,
+                numero: dados.numero,
+                estado: dados.estado,
+                complemento: dados.complemento,
+            },
+            senha: dados.senha,
+            telefone: dados.telefone,
+            possuiPlanoSaude: planos.length > 0,
+            planosSaude: planos,
+            imagem: dados.imagem
+        })
+
+        if(resultado){
+            toast.show({
+                title: 'Cadastro realizado com sucesso',
+                description: 'Você já pode fazer login',
+                backgroundColor: 'green.500',
+            })
+            navigation.replace('Login');
+        }
+        else{
+            toast.show({
+                title: 'Erro ao cadastrar',
+                description: 'Verifique os dados e tente novamente',
+                backgroundColor: 'red.500',
+            })
+        }
     }
 
     return (
@@ -103,8 +123,8 @@ export default function Cadastro({ navigation }: any) {
                 </Botao>
             }
             <Botao onPress={() => avancarSecao()} mt={4}>
-                Avançar
+                AvanÃ§ar
             </Botao>
-        </ScrollView>
+        </ScrollView >
     );
 }

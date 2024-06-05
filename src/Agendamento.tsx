@@ -4,6 +4,7 @@ import { Botao } from "./componentes/Botao";
 import { agendarConsulta } from "./servicos/ConsultaServico";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { converterStringParaData } from './utils/conversoes';
+import Principal from "./Tabs/Principal";
 
 export default function Agendamento({ route, navigation }: any) {
     const [data, setData] = useState('');
@@ -33,6 +34,10 @@ export default function Agendamento({ route, navigation }: any) {
         <VStack flex={1} alignItems="center" justifyContent="center" padding={5}>
             <Input placeholder="Digite a data 10/05/2024 12:23" onChangeText={setData} />
             <Botao onPress={agendar}>Agendar</Botao>
+            <Botao mt={3} mb={3} onPress={()=> navigation.navigate(Principal)}>
+            Home
+          </Botao>
         </VStack>
+        
     )
 }
